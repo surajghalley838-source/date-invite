@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Date Invitation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #ffeef2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Phone Screen Frame */
+        .phone-container {
+            width: 360px;
+            height: 640px;
+            background: #fff0f5;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 8px solid #222;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Heart Background Pattern Animation */
+        .screen {
+            flex: 1;
+            padding: 25px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-image: radial-gradient(#ffb6c1 20%, transparent 20%), radial-gradient(#ffb6c1 20%, transparent 20%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            animation: moveBg 10s linear infinite;
+        }
+
+        @keyframes moveBg {
+            from { background-position: 0 0, 20px 20px; }
+            to { background-position: 40px 40px, 60px 60px; }
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Card Style UI Components */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(255, 105, 180, 0.15);
+            width: 100%;
+            border: 2px solid #ffb6c1;
+        }
+
+        h2 {
+            color: #d1476a;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        .avatar {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 3px solid #ffb6c1;
+        }
+
+        /* Buttons and Interactive Elements */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.1s ease, background-color 0.2s;
+        }
+
+        .btn-yes, .btn-next {
+            background-color: #ff4d79;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-yes:hover, .btn-next:hover {
+            background-color: #e63964;
+        }
+
+        .btn-no {
+            background-color: #e0e0e0;
+            color: #666;
+            position: absolute;
+            z-index: 10;
+        }
+
+        /* Selection Grids (Food & Vibes) */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .grid-item {
+            background: #fff;
+            border: 2px solid #ffe4e1;
+            padding: 15px 5px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .grid-item span {
+            font-size: 11px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .grid-item:hover {
+            border-color: #ffb6c1;
+            background: #fff5f7;
+        }
+
+        .grid-item.selected {
+            background: #ffe4e1;
+            border-color: #ff4d79;
+            transform: scale(1.05);
+        }
+
+        /* Form Inputs */
+        .input-group {
+            margin: 15px 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        .input-group label {
+            display: block;
+            color: #d1476a;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        input[type="date"], input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ffe4e1;
+            border-radius: 10px;
+            outline: none;
+            color: #333;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #ff4d79;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+
+        <!-- SCREEN 1: THE ASK -->
+        <div class="screen active" id="screen1">
+            <div class="card">
+                <!-- Using a placeholder Shrek image to match the video's vibe -->
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" alt="Avatar" class="avatar" id="avatar-img">
+                <h2>Will you go on a date with me? 🥺</h2>
+                <div class="btn-container" style="height: 50px; position: relative;">
+                    <button class="btn-no" id="noBtn" onmouseover="moveNoButton()">No</button>
+                    <button class="btn-yes" onclick="nextScreen(2)" style="position: absolute; left: 25px; width: 110px;">Yes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: THE REACTION -->
+        <div class="screen" id="screen2">
+            <div class="card">
+                <div style="font-size: 50px; margin-bottom: 10px;">🙋‍♂️</div>
+                <h2>You actually said yes?</h2>
+                <p>I was so ready for you to say no...</p>
+                <button class="btn-next" onclick="nextScreen(3)">Next 💕</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: DATE & TIME -->
+        <div class="screen" id="screen3">
+            <div class="card">
+                <h2>When are you free? 📅</h2>
+                <div class="input-group">
+                    <label>Pick a date</label>
+                    <input type="date" id="dateInput" value="2026-05-29">
+                </div>
+                <div class="input-group">
+                    <label>Pick a time</label>
+                    <input type="time" id="timeInput" value="19:00">
+                </div>
+                <button class="btn-next" style="width:100%;" onclick="nextScreen(4)">Select the date</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: FOOD SELECTION -->
+        <div class="screen" id="screen4">
+            <div class="card">
+                <h2>What are we feelin'? 😋</h2>
+                <div class="grid">
+                    <div class="grid-item" onclick="selectItem(this, 'food', 'Burger')">🍔<span>Burger</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'food', 'Sushi')">🍣<span>Sushi</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'food', 'Noodles')"> Noodles</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'food', 'Taco')">🌮<span>Taco</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'food', 'Pizza')">🍕<span>Pizza</span></div>
+                </div>
+                <button class="btn-next" style="width:100%;" onclick="validateSelection(5, 'food')">mmmm, sounds yummy!</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: ACTIVITY VIBE -->
+        <div class="screen" id="screen5">
+            <div class="card">
+                <h2>What's your vibe? 🏝️</h2>
+                <div class="grid">
+                    <div class="grid-item" onclick="selectItem(this, 'vibe', 'Mini Golf')">⛳<span>Golf</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'vibe', 'Walk')">🚶‍♂️<span>Walk</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'vibe', 'Movie')">🎬<span>Movie</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'vibe', 'Amusement')">🎢<span>Amusement</span></div>
+                    <div class="grid-item" onclick="selectItem(this, 'vibe', 'Beach')">🌴<span>Beach</span></div>
+                </div>
+                <button class="btn-next" style="width:100%;" onclick="validateSelection(6, 'vibe')">sounds like a plan!</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: FINAL CONFIRMATION -->
+        <div class="screen" id="screen6">
+            <div class="card">
+                <div style="font-size: 50px; margin-bottom: 10px;">🐱</div>
+                <h2>I got you girl. 💕</h2>
+                <p>Be ready, I'm coming to get you 🚗💨</p>
+                
+                <div style="background: #fff5f7; padding: 15px; border-radius: 10px; text-align: left; margin-bottom: 15px; border: 1px dashed #ff4d79;">
+                    <div id="summaryDate" style="font-size: 14px; margin-bottom: 5px; color: #555;"></div>
+                    <div id="summaryFood" style="font-size: 14px; margin-bottom: 5px; color: #555;"></div>
+                    <div id="summaryVibe" style="font-size: 14px; color: #555;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let selections = {
+            date: '',
+            time: '',
+            food: '',
+            vibe: ''
+        };
+
+        // Screen switching flow mechanics
+        function nextScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + screenNum).classList.add('active');
+
+            if(screenNum === 6) {
+                compileSummary();
+            }
+        }
+
+        // Running away logic for the 'No' button
+        function moveNoButton() {
+            const noBtn = document.getElementById('noBtn');
+            // Constraints to keep the button bouncing strictly within the card boundaries
+            const x = Math.random() * 160 + 10;
+            const y = Math.random() * 300 - 150; 
+            
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        }
+
+        // Generic grid picker selector logic
+        function selectItem(element, category, value) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.grid-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            selections[category] = value;
+        }
+
+        // Require selecting an item before moving forward
+        function validateSelection(nextStep, category) {
+            if (!selections[category]) {
+                alert("Pick one first! 😉");
+                return;
+            }
+            nextScreen(nextStep);
+        }
+
+        // Dynamic details construction on the final confirmation card
+        function compileSummary() {
+            const dateVal = new Date(document.getElementById('dateInput').value);
+            const options = { month: 'long', day: 'numeric', year: 'numeric' };
+            const formattedDate = dateVal.toLocaleDateString('en-US', options);
+            
+            const timeVal = document.getElementById('timeInput').value;
+
+            document.getElementById('summaryDate').innerHTML = `📅 <b>Date:</b> ${formattedDate} @ ${timeVal}`;
+            document.getElementById('summaryFood').innerHTML = `🍔 <b>Food:</b> ${selections.food}`;
+            document.getElementById('summaryVibe').innerHTML = `🌴 <b>Activity:</b> ${selections.vibe}`;
+        }
+    </script>
+</body>
+</html>
